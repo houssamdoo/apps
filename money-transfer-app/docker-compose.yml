@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database Service
+  db:
+    image: postgres:15-alpine
+    container_name: money-transfer-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: transferdb
+    ports:
+      - "5432:5432"
+    volumes:
+      # Mount the init script to initialize the database on startup
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      # Persist data
+      - postgres-data:/var/lib/postgresql/data
+
+  # .NET Backend Service
+  backend:
+    build:
+      context: ./backend
+    container_name: money-transfer-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=transferdb;Username=user;Password=password
+    depends_on:
+      - db
+
+  # React Frontend Service with Nginx
+  frontend:
+    build:
+      context: ./frontend
+    container_name: money-transfer-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres-data:
