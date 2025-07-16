@@ -1,0 +1,13 @@
+services:
+  frontend:
+    image: agb-frontend:v3.0
+    ports:
+      - "3001:80"
+    deploy:
+      mode: replicated
+      replicas: 20
+      placement:
+        max_replicas_per_node: 10
+        constraints:
+          - "node.labels.FrontEnd==true"
+      

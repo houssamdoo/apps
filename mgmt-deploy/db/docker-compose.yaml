@@ -1,0 +1,14 @@
+db:
+    image: postgres:15-alpine
+    container_name: money-transfer-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: transferdb
+    ports:
+      - "5432:5432"
+    volumes:
+      # Mount the init script to initialize the database on startup
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      # Persist data
+      - postgres-data:/var/lib/postgresql/data
