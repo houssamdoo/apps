@@ -10,4 +10,9 @@ services:
         max_replicas_per_node: 10
         constraints:
           - "node.labels.FrontEnd==true"
+      update_config:
+        parallelism: 5          # Update 1 task at a time
+        delay: 1s               # Wait 10s between each update
+        order: stop-first       # Start new container before stopping the old one
+        failure_action: pause    # Stop updating on failure
       
